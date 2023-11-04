@@ -29,7 +29,7 @@ default_pin = '0'
 dep_cash = 0
 trans_act = ""
 trans_amt = ""
-
+yo=0
 
 def fast_cash():
     # Implement the functionality for Transfer Funds
