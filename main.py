@@ -1,8 +1,9 @@
 import tkinter
-
-import time
+from time import strftime
 
 from tkinter import *
+
+import datetime as dt
 
 root = Tk()
 
@@ -24,13 +25,13 @@ balanceamt = 15000
 
 pn = ""
 amt = ""
-last_trac = ""
+last_trac = "No transaction has been made"
 default_pin = '0'
 dep_cash = 0
 trans_act = ""
 trans_amt = ""
-yo=0
-
+date = dt.datetime.now()
+font = {}
 def fast_cash():
     # Implement the functionality for Transfer Funds
 
@@ -136,6 +137,8 @@ def in_amt():
 def balance():
     global balanceamt
     label_result.config(text=f"Balance: {balanceamt}\n")
+    disable_options()
+    disable_number()
 
 
 def transferf():
@@ -143,10 +146,17 @@ def transferf():
     num = ""
     label_result.config(text="Enter Transfer Amount:")
     state = "transfer_funds"
-
-def hold():
-    time.sleep(5)
-    exit()
+def time():
+    global font
+    time_string = strftime('%H:%M:%S %p')  # time format
+    label_time.config(text=time_string)
+    label_time.place(x=400,y=250)
+    label_date.place(x=350, y =200)
+    label_time.after(1000, time)
+    font = {'ariel',30, 'bold'}
+# def hold():
+#     time.sleep(5)
+#     exit()
 def exit():
     global num, state, pin_verified, default_pin
     state = 'logged_out'
@@ -157,7 +167,6 @@ def exit():
     enable_number()
     if (num == default_pin):
         verify_pin()
-
 
 def enter():
     global num, state, last_trac, balanceamt, first_pin,second_pin,default_pin
@@ -195,9 +204,12 @@ def enter():
             last_trac = f"Rs.{with_amt} Successfully Dispenced."
             label_result.config(text=f"Rs.{with_amt} Successfully Dispenced.")
             balanceamt = balanceamt - int(with_amt)
-            hold()
+
         else:
             in_amt()
+
+        disable_number()
+        disable_options()
 
     elif (state == "askact"):
         global trans_act
@@ -229,15 +241,17 @@ def enter():
 
 
     elif (state == "mobile_recharge"):
+
         pnnumber = num
-        if balanceamt >= int(pnnumber):
+        if balanceamt>=100:
             last_trac = f"Rs. 100 Successfully Recharged on +91-{pnnumber}"
             label_result.config(text=f"Rs. 100 Successfully Recharged on +91-{pnnumber}")
-            balanceamt = balanceamt - int(pnnumber)
-            disable_options()
-            disable_number()
+            balanceamt = balanceamt - 100
         else:
             in_amt()
+
+        disable_options()
+        disable_number()
 
 
 def verify_pin():
@@ -362,9 +376,13 @@ def disable_options():
     pin_change_btn["state"] = DISABLED
 
 
-label_result = Label(root, width=100, height=10, text="Enter the pin:", font={"arial", 30})
 
+label_result = Label(root, width=100, height=10, text="Enter the pin:", font={"arial", 30})
 label_result.pack()
+
+label_date = Label(root, text=f"{date:%A, %B %d, %Y}", font=font, fg="#fff", bg='#171618')
+label_time = Label(root, font=font, fg="#fff", bg='#171618')
+time()
 
 transfer_funds_btn = Button(root, text="Transfer Funds", width=15, height=2, font={"arial", 30, "bold"}, bd=1,
                             fg="#fff", bg="#3697f5", state=DISABLED, command=lambda: transfer_funds())
@@ -468,5 +486,6 @@ zero_btn = Button(root, text="0", width=8, height=2, font={"arial", 30, "bold"},
 zero_btn.place(x=400, y=510)
 
 Button(root, text="", width=8, height=2, font={"arial", 30, "bold"}, bd=1, fg="#fff", bg="#2a2d36").place(x=500, y=510)
+
 
 root.mainloop()
