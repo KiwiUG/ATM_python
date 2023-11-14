@@ -1,9 +1,9 @@
 import tkinter
-from time import strftime
 
-from tkinter import *
-
+import time
 import datetime as dt
+from tkinter import *
+from time import strftime
 
 root = Tk()
 
@@ -25,22 +25,69 @@ balanceamt = 15000
 
 pn = ""
 amt = ""
-last_trac = "No transaction has been made"
+last_trac = ""
 default_pin = '0'
 dep_cash = 0
 trans_act = ""
 trans_amt = ""
+yo=0
 date = dt.datetime.now()
-font = {}
+font = {'ariel',30}
+trac_time = ''
 def fast_cash():
     # Implement the functionality for Transfer Funds
-
     global state
 
     state = "fast_cash"
 
-    label_result.config(text="Transfer Funds option selected")
+    label_result.config(text="Select amount to be dispensed")
 
+    # Create a dictionary to store references to the buttons
+    global buttons_dict
+    buttons_dict = {}
+
+    fivehundred_btn = Button(root, text="500", width=8, height=2, font={"arial", 30, "bold"}, bd=1, fg="#fff", bg="#2a2d36",
+                     command=lambda: fastCash_dispense("500"))
+
+    fivehundred_btn.place(x=50, y=30)
+    buttons_dict["500"] = fivehundred_btn
+
+    thousand_btn = Button(root, text="1000", width=8, height=2, font={"arial", 30, "bold"}, bd=1, fg="#fff", bg="#2a2d36",
+                     command=lambda: fastCash_dispense("1000"))
+
+    thousand_btn.place(x=50, y=100)
+    buttons_dict["1000"] = thousand_btn
+
+    fifteenhundred_btn = Button(root, text="1500", width=8, height=2, font={"arial", 30, "bold"}, bd=1, fg="#fff", bg="#2a2d36",
+                       command=lambda: fastCash_dispense("1500"))
+
+    fifteenhundred_btn.place(x=800, y=30)
+    buttons_dict["1500"] = fifteenhundred_btn
+
+    twothousand_btn = Button(root, text="2000", width=8, height=2, font={"arial", 30, "bold"}, bd=1, fg="#fff", bg="#2a2d36",
+                      command=lambda: fastCash_dispense("2000"))
+
+    twothousand_btn.place(x=800, y=100)
+    buttons_dict["2000"] = twothousand_btn
+
+def fastCash_dispense(amount):
+    global last_trac, balanceamt, trac_time
+    label_result.config(text=f"{amount} dispensed successfully.")
+    trac_time = strftime('%H:%M:%S %p')
+    last_trac = f"{amount} dispensed as fast cash at {trac_time}."
+
+
+    balanceamt -= int(amount)
+
+    # Destroy all buttons
+    for button in buttons_dict.values():
+        button.destroy()
+
+    disable_options()
+
+    disable_number()
+    enter_btn["state"] = DISABLED
+    delete_btn["state"]=DISABLED
 
 def change_pin():
     # Implement the functionality for Transfer Funds
@@ -127,7 +174,14 @@ def show(value):
 
     label_result.config(text=num)
 
-
+def time():
+    global font
+    time_string = strftime('%H:%M:%S %p')  # time format
+    label_time.config(text=time_string)
+    label_time.place(x=400,y=250)
+    label_date.place(x=350, y =200)
+    label_time.after(1000, time)
+    font = {'ariel',30, 'bold'}
 def in_amt():
     label_result.config(text="Insufficient Balance... Try again")
     disable_number()
@@ -137,8 +191,6 @@ def in_amt():
 def balance():
     global balanceamt
     label_result.config(text=f"Balance: {balanceamt}\n")
-    disable_options()
-    disable_number()
 
 
 def transferf():
@@ -146,39 +198,30 @@ def transferf():
     num = ""
     label_result.config(text="Enter Transfer Amount:")
     state = "transfer_funds"
-def time():
-    global font
-    time_string = strftime('%H:%M:%S %p')  # time format
-    label_time.config(text=time_string)
-    label_time.place(x=400,y=250)
-    label_date.place(x=350, y =200)
-    label_time.after(1000, time)
-    font = {'ariel',30, 'bold'}
-# def hold():
-#     time.sleep(5)
-#     exit()
+
+def hold():
+    time.sleep(5)
+    exit()
 def exit():
     global num, state, pin_verified, default_pin
     state = 'logged_out'
     pin_verified = False
     num = ""
+    enter_btn["state"] = NORMAL
     label_result.config(text="Enter the pin:")
     disable_options()
     enable_number()
     if (num == default_pin):
         verify_pin()
 
+
 def enter():
-    global num, state, last_trac, balanceamt, first_pin,second_pin,default_pin
+    global num, state, last_trac, balanceamt, first_pin,second_pin,default_pin,trac_time
+    trac_time = strftime('%H:%M:%S %p')
     if (state == 'logged_out' or pin_verified == False):
 
         verify_pin()
 
-
-
-    elif (state == 'fast_cash'):
-
-        label_result.config(text="add the function to run fast_cash")
 
     elif(state=='verify'):
         state = "change_pin"
@@ -201,15 +244,12 @@ def enter():
     elif (state == "withdrawal"):
         with_amt = num
         if (balanceamt >= int(with_amt)):
-            last_trac = f"Rs.{with_amt} Successfully Dispenced."
-            label_result.config(text=f"Rs.{with_amt} Successfully Dispenced.")
+            last_trac = f"Rs.{with_amt} Successfully Dispenced at {trac_time}."
+            label_result.config(text=f"Rs.{with_amt} Successfully Dispenced at {trac_time}.")
             balanceamt = balanceamt - int(with_amt)
 
         else:
             in_amt()
-
-        disable_number()
-        disable_options()
 
     elif (state == "askact"):
         global trans_act
@@ -221,8 +261,8 @@ def enter():
         global trans_amt
         trans_amt = num
         if (balanceamt >= int(trans_amt)):
-            label_result.config(text=f"Rs.{trans_amt} was Transfered to Acct no.{trans_act}")
-            last_trac = f"Rs.{trans_amt} was Transfered to Acct no.{trans_act}"
+            label_result.config(text=f"Rs.{trans_amt} was Transfered to Acct no.{trans_act} at {trac_time}.")
+            last_trac = f"Rs.{trans_amt} was Transfered to Acct no.{trans_act} at {trac_time} "
             balanceamt = balanceamt - int(trans_amt)
         else:
             in_amt()
@@ -241,17 +281,15 @@ def enter():
 
 
     elif (state == "mobile_recharge"):
-
         pnnumber = num
-        if balanceamt>=100:
-            last_trac = f"Rs. 100 Successfully Recharged on +91-{pnnumber}"
-            label_result.config(text=f"Rs. 100 Successfully Recharged on +91-{pnnumber}")
-            balanceamt = balanceamt - 100
+        if balanceamt >= int(pnnumber):
+            last_trac = f"Rs. 100 Successfully Recharged on +91-{pnnumber} at {trac_time}."
+            label_result.config(text=f"Rs. 100 Successfully Recharged on +91-{pnnumber} at {trac_time}.")
+            balanceamt = balanceamt - int(pnnumber)
+            disable_options()
+            disable_number()
         else:
             in_amt()
-
-        disable_options()
-        disable_number()
 
 
 def verify_pin():
@@ -294,6 +332,7 @@ def verify_pin():
 
 def enable_options():
     # Enable the buttons for ATM options
+    delete_btn["state"]=NORMAL
 
     transfer_funds_btn["state"] = NORMAL
 
@@ -377,12 +416,9 @@ def disable_options():
 
 
 
-label_result = Label(root, width=100, height=10, text="Enter the pin:", font={"arial", 30})
-label_result.pack()
+label_result = Label(root, width=150, height=10, text="Enter the pin:", font={"arial", 30})
 
-label_date = Label(root, text=f"{date:%A, %B %d, %Y}", font=font, fg="#fff", bg='#171618')
-label_time = Label(root, font=font, fg="#fff", bg='#171618')
-time()
+label_result.pack()
 
 transfer_funds_btn = Button(root, text="Transfer Funds", width=15, height=2, font={"arial", 30, "bold"}, bd=1,
                             fg="#fff", bg="#3697f5", state=DISABLED, command=lambda: transfer_funds())
@@ -439,8 +475,10 @@ three_btn = Button(root, text="3", width=8, height=2, font={"arial", 30, "bold"}
 
 three_btn.place(x=500, y=300)
 
-Button(root, text="Delete", width=8, height=2, font={"arial", 30, "bold"}, bd=1, fg="#fff", bg="#FFC000",
-       command=lambda: delete()).place(x=600, y=300)
+delete_btn=Button(root, text="Delete", width=8, height=2, font={"arial", 30, "bold"}, bd=1, fg="#fff", bg="#FFC000",
+       command=lambda: delete())
+
+delete_btn.place(x=600, y=300)
 
 four_btn = Button(root, text="4", width=8, height=2, font={"arial", 30, "bold"}, bd=1, fg="#fff", bg="#2a2d36",
                   command=lambda: show("4"))
@@ -457,8 +495,10 @@ six_btn = Button(root, text="6", width=8, height=2, font={"arial", 30, "bold"}, 
 
 six_btn.place(x=500, y=370)
 
-Button(root, text="Cancel", width=8, height=2, font={"arial", 30, "bold"}, bd=1, fg="#fff", bg="#D70040",
-       command=lambda: exit()).place(x=600, y=370)
+cancel_btn=Button(root, text="Cancel", width=8, height=2, font={"arial", 30, "bold"}, bd=1, fg="#fff", bg="#D70040",
+       command=lambda: exit())
+
+cancel_btn.place(x=600, y=370)
 
 seven_btn = Button(root, text="7", width=8, height=2, font={"arial", 30, "bold"}, bd=1, fg="#fff", bg="#2a2d36",
                    command=lambda: show("7"))
@@ -475,8 +515,10 @@ nine_btn = Button(root, text="9", width=8, height=2, font={"arial", 30, "bold"},
 
 nine_btn.place(x=500, y=440)
 
-Button(root, text="Enter", width=8, height=5, font={"arial", 30, "bold"}, bd=1, fg="#fff", bg="#009E60",
-       command=lambda: enter()).place(x=600, y=440)
+enter_btn=Button(root, text="Enter", width=8, height=5, font={"arial", 30, "bold"}, bd=1, fg="#fff", bg="#009E60",
+       command=lambda: enter())
+
+enter_btn.place(x=600, y=440)
 
 Button(root, text="", width=8, height=2, font={"arial", 30, "bold"}, bd=1, fg="#fff", bg="#2a2d36").place(x=300, y=510)
 
@@ -487,5 +529,13 @@ zero_btn.place(x=400, y=510)
 
 Button(root, text="", width=8, height=2, font={"arial", 30, "bold"}, bd=1, fg="#fff", bg="#2a2d36").place(x=500, y=510)
 
+label_date = Label(root, text=f"{date:%A, %B %d, %Y}", font=font, fg="#fff", bg='#171618')
+label_time = Label(root, font=font, fg="#fff", bg='#171618')
+time()
 
 root.mainloop()
+
+
+
+
+
