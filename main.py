@@ -21,6 +21,7 @@ pin_verified = False
 
 balanceamt = 15000
 
+ug=""
 pn = ""
 amt = ""
 last_trac = ""
