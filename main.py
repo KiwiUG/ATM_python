@@ -1,5 +1,3 @@
-import tkinter
-
 import time
 import datetime as dt
 from tkinter import *
@@ -245,11 +243,13 @@ def enter():
         with_amt = num
         if (balanceamt >= int(with_amt)):
             last_trac = f"Rs.{with_amt} Successfully Dispenced at {trac_time}."
-            label_result.config(text=f"Rs.{with_amt} Successfully Dispenced at {trac_time}.")
+            label_result.config(text=f"Rs.{with_amt} Successfully Dispenced.")
             balanceamt = balanceamt - int(with_amt)
 
         else:
             in_amt()
+        disable_options()
+        disable_number()
 
     elif (state == "askact"):
         global trans_act
@@ -261,12 +261,13 @@ def enter():
         global trans_amt
         trans_amt = num
         if (balanceamt >= int(trans_amt)):
-            label_result.config(text=f"Rs.{trans_amt} was Transfered to Acct no.{trans_act} at {trac_time}.")
+            label_result.config(text=f"Rs.{trans_amt} was Transfered to Acct no.{trans_act}")
             last_trac = f"Rs.{trans_amt} was Transfered to Acct no.{trans_act} at {trac_time} "
             balanceamt = balanceamt - int(trans_amt)
         else:
             in_amt()
-
+        disable_options()
+        disable_number()
 
     elif (state == "cash_deposit"):
 
@@ -282,10 +283,10 @@ def enter():
 
     elif (state == "mobile_recharge"):
         pnnumber = num
-        if balanceamt >= int(pnnumber):
+        if int(balanceamt) >= 100:
             last_trac = f"Rs. 100 Successfully Recharged on +91-{pnnumber} at {trac_time}."
-            label_result.config(text=f"Rs. 100 Successfully Recharged on +91-{pnnumber} at {trac_time}.")
-            balanceamt = balanceamt - int(pnnumber)
+            label_result.config(text=f"Rs. 100 Successfully Recharged on +91-{pnnumber}.")
+            balanceamt = balanceamt - 100
             disable_options()
             disable_number()
         else:
@@ -416,7 +417,7 @@ def disable_options():
 
 
 
-label_result = Label(root, width=150, height=10, text="Enter the pin:", font={"arial", 30})
+label_result = Label(root, width=150, height=10, text="Enter the pin:", font={"arial", 30} , bg = "#fff")
 
 label_result.pack()
 
